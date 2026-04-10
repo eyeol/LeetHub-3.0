@@ -1451,11 +1451,18 @@ chrome.storage.local.get('isSync', data => {
     'leethub_hook',
     'mode_type',
     'custom_commit_message',
+    'useDifficultyFolder', // local storage에 키 생성
+    'useLanguageFolder',
   ];
   if (!data || !data.isSync) {
     keys.forEach(key => {
       chrome.storage.sync.get(key, data => {
-        chrome.storage.local.set({ [key]: data[key] });
+        if (data[key] === undefined) {
+          // default 값 추가
+          if (key === 'useDifficultyFolder' || key === 'useLanguageFolder') {
+            chrome.storage.local.set({ [key]: true });
+          }
+        } else chrome.storage.local.set({ [key]: data[key] });
       });
     });
     chrome.storage.local.set({ isSync: true }, _ => {
